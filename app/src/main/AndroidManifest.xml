@@ -6,14 +6,16 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:name="com.example.smartairqualitymonitor.SmartAirQualityApplication"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
-        tools:targetApi="28">
-
+        tools:targetApi="28"
+        tools:ignore="Instantiatable">
 
         <activity
-            android:name="com.example.smartairqualitymonitor.SmartAirQualityApp"
+            android:name="com.example.smartairqualitymonitor.SmartAirQualityActivity"
+
             android:exported="true"
             android:theme="@style/Theme.SmartAirQualityMonitor">
             <intent-filter>
@@ -21,6 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

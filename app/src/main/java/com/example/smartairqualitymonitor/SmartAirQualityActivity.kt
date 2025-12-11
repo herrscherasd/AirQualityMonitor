@@ -12,7 +12,7 @@ import com.example.smartairqualitymonitor.presentation.theme.SmartAirQualityThem
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class SmartAirQualityApp : ComponentActivity() {
+class SmartAirQualityActivity: ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
