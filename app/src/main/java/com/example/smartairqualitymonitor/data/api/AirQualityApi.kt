@@ -6,5 +6,5 @@ import retrofit2.http.GET
 
 interface AirQualityApi {
     @GET("data")
-    suspend fun getAirQualityData(): Response<List<AirQualityData>>
+    suspend fun getAirQualityData(): Response<AirQualityData>
 }

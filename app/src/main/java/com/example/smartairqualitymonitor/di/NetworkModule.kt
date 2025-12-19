@@ -1,38 +1,54 @@
 package com.example.smartairqualitymonitor.di
 
 import com.example.smartairqualitymonitor.data.api.AirQualityApi
+import com.example.smartairqualitymonitor.data.api.repository.AirQualityRepository
+import com.example.smartairqualitymonitor.domain.repository.IAirQualityRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "https://YOUR_API_URL/"  // <--- поменяй!
+    private const val BASE_URL = "http://172.20.10.2"
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient =
-        OkHttpClient.Builder()
+    fun provideOkHttpClient(): OkHttpClient {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+
+        return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .retryOnConnectionFailure(true)
             .build()
+    }
 
     @Provides
     @Singleton
-    fun provideRetrofit(client: OkHttpClient): Retrofit =
-        Retrofit.Builder()
+    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
+        return Retrofit.Builder()
             .baseUrl(BASE_URL)
-            .client(client)
+            .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
+    }
 
     @Provides
     @Singleton
-    fun provideAirQualityApi(retrofit: Retrofit): AirQualityApi =
-        retrofit.create(AirQualityApi::class.java)
+    fun provideAirQualityApi(retrofit: Retrofit): AirQualityApi {
+        return retrofit.create(AirQualityApi::class.java)
+    }
 }

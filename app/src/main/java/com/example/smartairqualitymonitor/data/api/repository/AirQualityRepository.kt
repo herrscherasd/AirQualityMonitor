@@ -8,12 +8,28 @@ import javax.inject.Inject
 class AirQualityRepository @Inject constructor(
     private val api: AirQualityApi
 ) : IAirQualityRepository {
+
     override suspend fun fetchAirQuality(): List<AirQuality> {
-        val response = api.getAirQualityData()
-        return if (response.isSuccessful) {
-            response.body()?.map { AirQuality(it.air_quality, it.timestamp) } ?: emptyList()
-        } else {
-            emptyList()
+        return try {
+            val response = api.getAirQualityData()
+            if (response.isSuccessful) {
+                response.body()?.let { data ->
+                    listOf(
+                        AirQuality.fromESP32(
+                            rawValue = data.rawValue,
+                            voltage = data.voltage,
+                            ppm = data.ppm,
+                            quality = data.quality,
+                            timestamp = data.timestamp
+                        )
+                    )
+                } ?: emptyList()
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw e
         }
     }
 }

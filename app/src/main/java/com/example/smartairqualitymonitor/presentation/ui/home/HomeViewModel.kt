@@ -38,13 +38,24 @@ class HomeViewModel @Inject constructor(
             try {
                 val data = repository.fetchAirQuality()
                 if (data.isNotEmpty()) {
-                    _airQuality.value = data.last()
-                    _history.value = data.takeLast(10)
+                    val newReading = data.last()
+                    _airQuality.value = newReading
+
+                    // Add to history (keep last 10 readings)
+                    val updatedHistory = _history.value.toMutableList()
+                    updatedHistory.add(newReading)
+                    if (updatedHistory.size > 10) {
+                        updatedHistory.removeAt(0)
+                    }
+                    _history.value = updatedHistory
+
+                    _error.value = null
                 } else {
                     _error.value = "Нет данных от сервера"
                 }
             } catch (e: Exception) {
-                _error.value = "Ошибка подключения: ${e.message}"
+                _error.value = "Ошибка подключения: ${e.localizedMessage}"
+                e.printStackTrace()
             } finally {
                 _isLoading.value = false
             }
